@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="7e5277d0-4c1f-450a-89b5-061d270435f6" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="543e8051-e573-4f11-a535-a258c36988ef" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="Daddy@143" database="nt" />
+	</db:config>
+	<flow name="quicklearnFlow" doc:id="774b762f-066d-4041-8bc6-84acabc611c6" >
+		<http:listener doc:name="Listener" doc:id="ea35744c-d3fe-4fb7-a8db-dbe5d94af126" config-ref="HTTP_Listener_config" path="/gt"/>
+		<ee:transform doc:name="Transform Message" doc:id="1b4ab489-de61-4cd0-b8cd-6abe37b74c79" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+[{
+		"id": 784,
+		"name": "shoil"
+	},
+	{
+		"id": 834,
+		"name": "ram"
+	},
+	{
+		"id": 894,
+		"name": "sai"
+	},
+	{
+		"id": 132,
+		"name": "vijay"
+	}
+]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<db:bulk-insert doc:name="Bulk insert" doc:id="bf46072b-ae0d-4bfd-b321-2ffb6c217526" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into employee (id, name) values (:id, :name);]]></db:sql>
+		</db:bulk-insert>
+		<ee:transform doc:name="Transform Message" doc:id="38a16711-4f08-4ad1-a101-8f098e6ecd72">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
