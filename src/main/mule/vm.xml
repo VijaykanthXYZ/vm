@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:sockets="http://www.mulesoft.org/schema/mule/sockets" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/sockets http://www.mulesoft.org/schema/mule/sockets/current/mule-sockets.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="a0e87538-a085-4809-8478-582d9758295c" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<vm:config name="VM_Config" doc:name="VM Config" doc:id="c06235bd-0817-4a66-bc13-7e28c2f3e586" >
+		<vm:queues >
+			<vm:queue queueName="Q" />
+		</vm:queues>
+	</vm:config>
+	<flow name="vmFlow2" doc:id="99beea2f-a6e6-48a8-a76a-1333fd6f0e9e" >
+		<http:listener doc:name="Listener" doc:id="6ddbe6f1-34e9-4e6e-a61a-747a8a3059e8" config-ref="HTTP_Listener_config" path="/listner"/>
+		<vm:publish doc:name="Publish" doc:id="ac068145-1821-4d2b-bec1-3522e5bea0a9" config-ref="VM_Config" queueName="Q"/>
+	</flow>
+	<flow name="vmFlow3" doc:id="98af11b6-8dac-4087-a0b0-bd6f9ea2563f" >
+		<vm:listener doc:name="Listener" doc:id="ef363b3c-368b-4012-8b8a-86c7f7fa071b" config-ref="VM_Config" queueName="Q"/>
+		<logger level="INFO" doc:name="Logger" doc:id="7da9378c-9b22-4939-895b-59662e351917" message="#[payload]"/>
+	</flow>
+	<flow name="vmFlow" doc:id="26250eec-5d00-4984-b63a-846420b4c07d" >
+		<http:listener doc:name="Listener" doc:id="2501fabd-2f8b-4bcf-b0ad-39da181322f2" config-ref="HTTP_Listener_config" path="/publish"/>
+		<vm:publish-consume doc:name="Publish consume" doc:id="c887d6f6-42b5-49b5-aee7-dce18f865e7a" config-ref="VM_Config" queueName="Q"/>
+	</flow>
+</mule>
